@@ -1,0 +1,21 @@
+{
+    "qaic_tool_chain_path": "/opt/qti-aic",
+
+    "onnx_model_source": "/workspace/elim/CK-TOOLS/model-onnx-mlperf-bert-large-packed-for.qaic-downloaded/model.onnx",
+
+    "no_quantization": "yes",
+
+    "model_to_convert": "",
+
+    "model_name": "",
+
+    "compiler_args_name_prefix": "compiler_args_name_prefix",
+
+    "compiler_params_base": "-aic-hw -aic-hw-version=2.0 -compile-only -convert-to-fp16",
+
+    "compiler_scenario_name": "OFFLINE",
+
+    "batch_size": "",
+
+    "seg": "384"
+}

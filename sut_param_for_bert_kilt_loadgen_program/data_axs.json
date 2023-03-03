@@ -1,0 +1,100 @@
+{
+    "_parent_entries": [ [ "^", "byname", "base_bert_kilt_loadgen_program" ] ],
+    "tags": [ "param", "sut_specific" ],
+    "benchmark": "bert",
+
+    "bert_99":
+    {
+        "chai":
+        {
+            "compiler_flag": 
+            {
+                "Offline" :     "-aic-num-cores=1 -mos=1 -ols=2 -allocator-dealloc-delay=3",
+                "SingleStream": "-aic-num-cores=8 -mos=8 -ols=1"
+            },
+            "device_ids": "0",
+            "recommended_activation_count":
+            {
+                "Offline": "14",
+                "SingleStream" : "1"
+            },
+            "percentile_calibration_value": 99.99780,
+            "profiling_thread" : 24,
+            "recommended_max_wait_abs":
+            {
+                "Offline": "",
+                "SingleStream" : ""
+            }
+        },
+
+        "dyson":
+        {
+            "compiler_flag": 
+            {
+                "Offline" :     "-aic-num-cores=1 -mos=1 -ols=3",
+                "SingleStream": "-aic-num-cores=8 -mos=8 -ols=1",
+                "Server":       "-aic-num-cores=1 -mos=1 -ols=3"
+            },
+            "device_ids": "0,1,2,3,4",
+            "recommended_activation_count":
+            {
+                "Offline": "8",
+                "SingleStream" : "8",
+                "Server": "8"
+            },
+            "percentile_calibration_value": 99.99790,
+            "profiling_thread" : 4,
+            "recommended_max_wait_abs":
+            {
+                "Offline": "",
+                "SingleStream" : "",
+                "Server": "15000"
+            }
+        }
+    },
+
+    "bert_99_9":
+    {
+        "chai":
+        {
+            "compiler_flag": 
+            {
+                "Offline" :     "",
+                "SingleStream": ""
+            },
+            "device_ids": "0",
+            "recommended_activation_count":
+            {
+                "Offline": "4",
+                "SingleStream" : "4"
+            },
+            "recommended_max_wait_abs":
+            {
+                "Offline": "",
+                "SingleStream" : ""
+            }
+        },
+
+        "dyson":
+        {
+            "compiler_flag": 
+            {
+                "Offline" :     "-aic-num-cores=4",
+                "Server":       "-aic-num-cores=4"
+            },
+            "device_ids": "0,1,2,3,4",
+            "recommended_activation_count":
+            {
+                "Offline": "8",
+                "SingleStream" : "8",
+                "Server": "8"
+            },
+            "recommended_max_wait_abs":
+            {
+                "Offline": "",
+                "SingleStream" : "",
+                "Server": "15000"
+            }
+        }
+    }
+}

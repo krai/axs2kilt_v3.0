@@ -1,0 +1,50 @@
+{
+    "_parent_entries": [ [ "^", "byname", "python_script" ] ],
+    "_producer_rules": [
+        [ [ "quant_ready", "onnx_model", "packed", "model_name=bert_large" ], [["run"]], { "return_saved_record_entry": false } ]
+    ],
+
+    "return_this_entry": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "work_collection" ],
+        [ "attached_entry", [ "quant_ready_onnx_packed_bert_large", {
+                "tags": [ "quant_ready", "onnx_model", "packed"],
+                "model_name": [ "^^", "substitute", "#{model_name}#" ],
+                "weight_transformations": "PyTorch -> ONNX",
+                "file_name": "model.onnx"
+            } ] ],
+        [ "save" ]
+    ]] ],
+
+    "model_source": [ "^", "execute", [[
+        [ "byquery", "downloaded,tf_model,model_name=bert_large" ],
+        [ "get_path" ]
+    ]] ],
+    
+    "onnx_graphsurgeon_query": ["python_package", "package_name=onnx-graphsurgeon", "package_version=0.3.11"],
+    "numpy_query": ["python_package", "package_name=numpy", "package_version=1.23.0"],
+    "tensorflow_query": ["python_package", "package_name=tensorflow", "package_version=2.11.0"],
+    "onnx_query": ["python_package", "package_name=onnx", "package_version=1.8.1", "pip_options=numpy==1.23.0 protobuf==3.20.1" ],
+    "torch_query": ["python_package", "package_name=torch", "package_version=1.8.1"],
+    "transformers_query": ["python_package", "package_name=transformers", "package_version=2.4.0"],
+
+    "python_deps": [
+        [ "^", "byquery", [ [ "^^", "get", "onnx_graphsurgeon_query" ] ], {}, ["onnx_graphsurgeon_query"] ],
+        [ "^", "byquery", [ [ "^^", "get", "numpy_query" ] ], {}, ["numpy_query"] ],
+        [ "^", "byquery", [ [ "^^", "get", "tensorflow_query" ] ], {}, ["tensorflow_query"] ],
+        [ "^", "byquery", [ [ "^^", "get", "onnx_query" ] ], {}, ["onnx_query"] ],
+        [ "^", "byquery", [ [ "^^", "get", "torch_query" ] ], {}, ["torch_query"] ],
+        [ "^", "byquery", [ [ "^^", "get", "transformers_query" ] ], {}, ["transformers_query"] ]
+    ],
+
+    "target_dir": [ "^^", "execute", [[
+        [ "get", "return_this_entry" ],
+        [ "get_path" ],
+        0,
+        [ "func", "os.path.dirname" ]
+    ]] ],
+
+    "rel_script_path": "convert_model.py",
+
+    "script_extra_params": [ "^^", "substitute", "--src #{model_source}#/ --dest #{target_dir}#/" ]
+}

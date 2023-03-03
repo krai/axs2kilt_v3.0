@@ -1,0 +1,34 @@
+{
+    "_parent_entries": [
+        [
+            "^",
+            "core_collection"
+        ],
+        [
+            "^",
+            "byname",
+            "git"
+        ]
+    ],
+    "tags": [
+        "collection",
+        "git_repo"
+    ],
+    "contained_entries": {
+        "bert_squad_qaic_loadgen_kilt": "bert_squad_qaic_loadgen_kilt",
+        "kilt_executable_bert_recipe": "kilt_executable_bert_recipe",
+        "lib_kilt_c_recipe": "lib_kilt_c_recipe",
+        "protobuf_c_recipe": "protobuf_c_recipe",
+        "model_tf_bert_large_recipe": "model_tf_bert_large_recipe",
+        "model_onnx_bert_large_packed_recipe": "model_onnx_bert_large_packed_recipe",
+        "base_qaic_model": "base_qaic_model",
+	"algo_efficient_seq_packing_for_bert_recipe": "algo_efficient_seq_packing_for_bert_recipe",
+        "squad_efficient_seq_packed_for_bert_recipe": "squad_efficient_seq_packed_for_bert_recipe",
+        "profile_qaic_bert_large_packed_quant_recipe": "profile_qaic_bert_large_packed_quant_recipe",
+        "model_qaic_bert_large_packed_quant_recipe": "model_qaic_bert_large_packed_quant_recipe",
+        "base_kilt_loadgen_program": "base_kilt_loadgen_program",
+        "base_bert_kilt_loadgen_program": "base_bert_kilt_loadgen_program",
+        "sut_param_for_bert_kilt_loadgen_program": "sut_param_for_bert_kilt_loadgen_program"
+    },
+    "repo_name": "axs2kilt"
+}

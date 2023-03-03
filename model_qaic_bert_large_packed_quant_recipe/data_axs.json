@@ -1,0 +1,115 @@
+{
+    "_parent_entries": [ [ "^", "byname", "shell" ], [ "^", "byname", "base_qaic_model" ] ],
+    "_producer_rules": [
+        [ [ "kilt_ready", "qaic_model", "model_name=bert_99" ], [["run"]], { "return_saved_record_entry": false }, [] ]
+    ],
+
+    "abs_source_path": [ "^", "execute", [[
+        [ "byname", "base_qaic_model" ],
+        [ "get_path" ]
+    ]] ],
+
+    "model_name": "bert_99",
+    "model_to_convert": "compile_bert_99",
+
+    "sut_name": ["^", "func", "socket.gethostname" ], 
+    
+    "profile_yaml_query": [ "^^", "substitute", [["profile", "qaic", "model_name=bert_99", "sut_name=#{sut_name}#"]] ],
+    "profile_yaml_entry": [ "^", "byquery", [[ "^^", "get", "profile_yaml_query" ]], {}, ["profile_yaml_query"] ],
+    "profile_yaml": [ "^^", "execute", [[
+        [ "get", "profile_yaml_entry" ],
+        [ "get_path", "profile.yaml" ]
+    ]] ],
+
+    "onnx_model_source": [ "^", "execute", [[
+        [ "byquery", "quant_ready,onnx_model,packed,model_name=bert_large" ],
+        [ "get_path" ]
+    ]] ],
+
+    "scenario": "Offline",
+
+    "compiler_scenario_name": [ "^^", "case",   [ ["^^", "get", "scenario"],
+        "Offline" ,        "OFFLINE",
+        "SingleStream",    "SINGLESTREAM",
+        "Server",          "SERVER"],
+        { "default_value": "OFFLINE" }
+    ],
+
+    "compiler_params_base": "-aic-hw -aic-hw-version=2.0 -execute-nodes-in-fp16=Add,Div,Erf,Softmax",
+    "compiler_params_scenario_specific": [ "^^", "case",   [ ["^^", "get", "scenario"],
+        "Offline" ,        "-quantization-schema-constants=symmetric_with_uint8 -quantization-schema-activations=symmetric_with_uint8 -quantization-precision=Int8 -quantization-precision-bias=Int32 -vvv -compile-only -onnx-define-symbol=batch_size,1 -onnx-define-symbol=seg_length,[SEG] -multicast-weights",
+        "SingleStream",    "-quantization-schema-constants=symmetric_with_uint8 -quantization-schema-activations=symmetric_with_uint8 -quantization-precision=Int8 -quantization-precision-bias=Int32 -vvv -compile-only -onnx-define-symbol=batch_size,1 -onnx-define-symbol=seg_length,[SEG] -multicast-weights",
+        "Server",          "-compile-only"],
+        { "default_value": "-quantization-schema-constants=symmetric_with_uint8 -quantization-schema-activations=symmetric_with_uint8 -quantization-precision=Int8 -quantization-precision-bias=Int32 -vvv -compile-only -onnx-define-symbol=batch_size,1 -onnx-define-symbol=seg_length,[SEG] -multicast-weights" }
+    ],
+    
+    "compiler_args_scenario_specific":[ "^^", "case",   [ ["^^", "get", "scenario"],
+        "Offline" ,        "-size-split-granularity=1536 -vtcm-working-set-limit-ratio=1",
+        "SingleStream",    "-aic-num-of-instances=1 -num-iter=1000 -profiling-threads=1 -use-producer-dma=1 -stats-batchsize=1",
+        "Server",          "-onnx-define-symbol=batch_size,1 -onnx-define-symbol=seg_length,[SEG] -multicast-weights"],
+        { "default_value": "-size-split-granularity=1536 -vtcm-working-set-limit-ratio=1" }
+    ],
+
+    "sut_param_query": [ "param", "sut_specific", "benchmark=bert" ],
+    "sut_param_entry": [ "^", "byquery", [[ "^^", "get", "sut_param_query" ]], {}, ["sut_param_query"] ],
+    "compiler_params_sut": [ "^^", "dig", [ "^^", "substitute", "sut_param_entry.#{model_name}#.#{sut_name}#.compiler_flag.#{scenario}#"]],
+    "percentile_calibration_value": [ "^^", "dig", [ "^^", "substitute", "sut_param_entry.#{model_name}#.#{sut_name}#.percentile_calibration_value"]],
+
+    "return_this_entry": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "work_collection" ],
+        [ "attached_entry", [ ["^^", "substitute", "compiled_qaic_model_#{model_name}#_#{scenario}#_sut_#{sut_name}#"] , {
+            "_parent_entries": [ "AS^IS", "AS^IS", [ "^", "byname", "base_qaic_model" ] ],
+            "tags": [ "kilt_ready", "qaic_model"],
+            "model_name": ["^^", "substitute", "#{model_name}#"],
+            "scenario": ["^^", "substitute", "#{scenario}#"],
+            "sut_name": ["^^", "substitute", "#{sut_name}#"],
+            "input_data_types": "int32", 
+            "weight_data_types": "int8",
+            "url": "https://zenodo.org/record/3733868/files/model.ckpt-5474.data-00000-of-00001",
+            "weight_transformations": "quantized",
+            "retrained": false,
+            "model_to_convert": ["^^", "substitute", "model_qaic_#{model_to_convert}#"],
+            "onnx_model_source": ["^^", "substitute", "#{onnx_model_source}#"],
+            "no_quantization": "",
+            "compiler_scenario_name": ["^^", "substitute", "#{compiler_scenario_name}#"],
+            "compiler_params_base":  ["^^", "substitute", "#{compiler_params_base}#"],
+            "compiler_params_scenario_specific":  ["^^", "substitute", "#{compiler_params_scenario_specific}#"],
+            "compiler_params_sut":  ["^^", "substitute", "#{compiler_params_sut}#"],
+            "compiler_args_scenario_specific":  ["^^", "substitute", "#{compiler_args_scenario_specific}#"],
+            "batch_size": "0",
+            "seg": "384",
+            "profile_yaml": ["^^", "substitute", "#{profile_yaml}#"],
+            "percentile_calibration_value": ["^^", "substitute", "\"#{percentile_calibration_value}#\""],
+            "quantization_params": "-quantization-calibration=Percentile  -percentile-calibration-value=[PERCENTILE_CALIBRATION_VALUE]"
+        } ] ],
+        [ "save" ]
+    ]] ],
+
+    "install_dir":[ "^^", "execute", [[
+        [ "get", "return_this_entry" ],
+        [ "get_path" ]
+    ]] ],
+
+    "env": {
+        "INSTALL_DIR": [ "^^", "substitute", "#{install_dir}#"],
+        "ONNX_MODEL_SOURCE": [ "^^", "dig", "return_this_entry.onnx_model_source"],
+        "_NO_QUANTIZATION" : [ "^^", "dig", "return_this_entry.no_quantization"],
+        "_MODEL_TO_CONVERT": [ "^^", "substitute", [ "^^", "dig", "return_this_entry.model_to_convert"]],
+        "_COMPILER_PARAMS_SCENARIO_NAME": [ "^^", "dig", "return_this_entry.compiler_scenario_name"],
+        "_COMPILER_PARAMS_BASE": [ "^^", "dig", "return_this_entry.compiler_params_base"],
+        "_COMPILER_PARAMS_SCENARIO_SPECIFIC": [ "^^", "dig", "return_this_entry.compiler_params_scenario_specific"],
+        "_COMPILER_PARAMS_SUT": [ "^^", "dig", "return_this_entry.compiler_params_sut"],
+        "_COMPILER_ARGS_SCENARIO": [ "^^", "dig", "return_this_entry.compiler_args_scenario_specific"],
+        "QAIC_TOOLCHAIN_PATH": [ "^^", "dig", "return_this_entry.qaic_tool_chain_path"],
+        "_BATCH_SIZE": [ "^^", "dig", "return_this_entry.batch_size"],
+        "_SEG": [ "^^", "dig", "return_this_entry.seg"],
+        "CK_ENV_COMPILER_GLOW_PROFILE_YAML": [ "^^", "dig", "return_this_entry.profile_yaml"],
+        "_PERCENTILE_CALIBRATION_VALUE": [ "^^", "dig", "return_this_entry.percentile_calibration_value"],
+        "_QUANTIZATION_PARAMS": [ "^^", "dig", "return_this_entry.quantization_params"]
+    },
+
+    "in_dir": [ "^^", "substitute", "#{install_dir}#" ],
+
+    "shell_cmd_with_subs": [ "^^", "substitute", "#{abs_source_path}#/install.sh" ]
+}

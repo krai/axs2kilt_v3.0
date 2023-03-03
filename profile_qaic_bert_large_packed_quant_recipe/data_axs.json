@@ -1,0 +1,47 @@
+{
+    "_parent_entries": [ [ "^", "byname", "shell" ], [ "^", "byname", "base_qaic_model" ]],
+    "_producer_rules": [
+        [ [ "profile", "qaic", "model_name=bert_99" ], [["run"]], { "return_saved_record_entry": false }, [] ]
+    ],
+
+    "model_name": "bert_99",
+
+    "onnx_model_source": [ "^", "execute", [[
+        [ "byquery", "quant_ready,onnx_model,packed,model_name=bert_large" ],
+        [ "get_path" ]
+    ]] ],
+
+    "dataset_query": [ "efficient_seq_packed", "squad_v1_1" ],
+    "dataset_entry": [ "^", "byquery", [[ "^^", "get", "dataset_query" ]], {}, ["dataset_query"] ],
+    "dataset_path": [ "^^", "execute", [[
+        [ "get", "dataset_entry" ],
+        [ "get_path", "packed/inputfiles.txt" ]
+    ]] ],
+    "max_seq_length": [ "^^", "dig", "dataset_entry.max_seq_length" ],
+    
+    "sut_name": ["^", "func", "socket.gethostname" ],
+    "sut_param_query": [ "param", "sut_specific", "benchmark=bert" ],
+    "sut_param_entry": [ "^", "byquery", [[ "^^", "get", "sut_param_query" ]], {}, ["sut_param_query"] ],
+    "profiling_thread": [ "^^", "dig", [ "^^", "substitute", "sut_param_entry.#{model_name}#.#{sut_name}#.profiling_thread"]],
+
+    "return_this_entry": [ "^^", "execute", [[
+        [ "get_kernel" ],
+        [ "work_collection" ],
+        [ "attached_entry", [ ["^^", "substitute", "profile_for_qaic_model_#{model_name}#"] , {
+            "tags": [ "profile", "qaic"],
+            "model_name": ["^^", "substitute", "#{model_name}#"],
+            "onnx_model_source": ["^^", "substitute", "#{onnx_model_source}#"],
+            "max_seq_length": ["^^", "substitute", "#{max_seq_length}#"],
+            "sut_name": ["^^", "substitute", "#{sut_name}#"],
+	        "profiling_thread": ["^^", "substitute", "#{profiling_thread}#"]
+        } ] ],
+        [ "save" ]
+    ]] ],
+
+    "in_dir":[ "^^", "execute", [[
+        [ "get", "return_this_entry" ],
+        [ "get_path" ]
+    ]] ],
+
+    "shell_cmd_with_subs": [ "^^", "substitute", "#{qaic_tool_chain_path}#/exec/qaic-exec -m=#{onnx_model_source}# -onnx-define-symbol=batch_size,1 -onnx-define-symbol=seg_length,#{max_seq_length}# -input-list-file=#{dataset_path}# -num-histogram-bins=512 -dump-profile=./profile.yaml -profiling-threads=#{profiling_thread}#" ]
+}

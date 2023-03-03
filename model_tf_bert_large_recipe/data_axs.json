@@ -1,0 +1,30 @@
+{
+    "_parent_entries": [ [ "^", "byname", "shell" ] ],
+    "_producer_rules": [
+        [ ["downloaded", "tf_model", "model_name=bert_large" ], [["run"]], { "return_saved_record_entry": false }, ["shell_cmd_with_subs"] ]
+    ],
+
+    "model_name": "bert_large",
+    "model_feature": "question-answering",
+
+    "return_this_entry": [ "^^", "execute", [[
+        [ "get", "__record_entry__" ],
+        [ "set_path", "downloaded_tf_bert_large" ],
+        [ "attach", [ "^", "work_collection" ] ],
+        [ "plant", [
+            "tags", [ "downloaded", "tf_model" ],
+            "model_name", [ "^^", "substitute", "#{model_name}#" ],
+            "file_name", "downloaded"
+        ]],
+        [ "save" ]
+    ]] ],
+
+    "install_dir":[ "^^", "execute", [[
+        [ "get", "return_this_entry" ],
+        [ "get_path" ]
+    ]] ],
+
+    "in_dir": ["^^", "get_path"],
+
+    "shell_cmd_with_subs": [ "^^", "substitute", "INSTALL_DIR=#{install_dir}# ./install.sh"]
+}
