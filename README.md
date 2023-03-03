@@ -1,7 +1,7 @@
 axs2kilt (pronounced like "Access to KILT")
 ===============================================
 
-In this repository we keep [axs](https://github.com/krai/axs) entries related to KILT.
+In this repository we keep [axs](https://github.com/krai/axs) entries related to [KILT](https://github.com/krai/kilt-mlperf).
 
 To import this repository and its dependencies into your **work_collection** , run
 ```

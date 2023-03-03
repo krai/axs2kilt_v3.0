@@ -1,5 +1,5 @@
 # MLPerf Inference - Language Models - KILT
-This implementation runs language models with the KILT backend.
+This implementation runs language models with the [KILT](https://github.com/krai/kilt-mlperf) backend.
 
 Currently it supports the following models:
 - BERT 99
