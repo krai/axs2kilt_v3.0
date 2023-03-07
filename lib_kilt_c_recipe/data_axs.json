@@ -1,15 +1,15 @@
 {
     "_parent_entries": [ [ "^", "byname", "shell" ] ],
     "_producer_rules": [
-        [ [ "git_repo", "repo_name=kilt-mlperf-dev"], [["get_kernel"],["byname","git"],["clone"]], {}, ["url"] ],
+        [ [ "git_repo", "repo_name=kilt-mlperf"], [["get_kernel"],["byname","git"],["clone"]], {}, ["url"] ],
         [ [ "compiled", "lib_kilt" ], [["run"]], { "return_saved_record_entry": false }, ["shell_cmd_with_subs"] ]
     ],
 
-    "url": "https://github.com/krai/kilt-mlperf-dev.git",
+    "url": "https://github.com/krai/kilt-mlperf.git",
     "abs_source_path": [ "^^", "get_path" ],
 
     "lib_kilt_source_path": [ "^", "execute", [[
-        [ "byquery", "git_repo,repo_name=kilt-mlperf-dev" ],
+        [ "byquery", "git_repo,repo_name=kilt-mlperf" ],
         [ "get_path" ]
     ]] ], 
 
@@ -23,7 +23,7 @@
     ]] ],
 
     "lib_kilt_include_path": [ "^", "execute", [[
-        [ "byquery", "git_repo,repo_name=kilt-mlperf-dev" ],
+        [ "byquery", "git_repo,repo_name=kilt-mlperf" ],
         [ "get_path" , "kilt.h" ]
     ]] ],
 

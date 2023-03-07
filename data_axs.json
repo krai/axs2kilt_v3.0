@@ -22,7 +22,7 @@
         "model_tf_bert_large_recipe": "model_tf_bert_large_recipe",
         "model_onnx_bert_large_packed_recipe": "model_onnx_bert_large_packed_recipe",
         "base_qaic_model": "base_qaic_model",
-	"algo_efficient_seq_packing_for_bert_recipe": "algo_efficient_seq_packing_for_bert_recipe",
+        "algo_efficient_seq_packing_for_bert_recipe": "algo_efficient_seq_packing_for_bert_recipe",
         "squad_efficient_seq_packed_for_bert_recipe": "squad_efficient_seq_packed_for_bert_recipe",
         "profile_qaic_bert_large_packed_quant_recipe": "profile_qaic_bert_large_packed_quant_recipe",
         "model_qaic_bert_large_packed_quant_recipe": "model_qaic_bert_large_packed_quant_recipe",
